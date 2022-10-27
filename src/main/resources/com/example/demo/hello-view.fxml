@@ -6,14 +6,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefHeight="570.0" prefWidth="570.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.GameOfLifeController">
+<VBox alignment="CENTER" prefHeight="571.0" prefWidth="511.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.GameOfLifeController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-   <HBox prefHeight="100.0" prefWidth="200.0">
+   <HBox prefHeight="25.0" prefWidth="518.0">
       <children>
-         <Button alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#btnpressed" text="Next generation" />
+         <Button alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#btnpressed" prefHeight="25.0" prefWidth="107.0" text="Next generation" />
       </children>
    </HBox>
-   <Canvas fx:id="cnvs" height="506.0" width="506.0" />
+   <Canvas fx:id="cnvs" height="506.0" width="500.0" />
 </VBox>
