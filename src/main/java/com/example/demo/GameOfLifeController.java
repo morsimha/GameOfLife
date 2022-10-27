@@ -6,22 +6,15 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
-
 import java.util.Random;
-
-
-//use rectangle, in an array.
-// use random to generate life
-// use 2 2d arrays, for current and next
-// change color than apply
-//rectangle attributes
 
 public class GameOfLifeController {
     final int SIZE = 100;
+    final int CELL_SIZE = 50;
     Rectangle[][] matrix = new Rectangle[SIZE][SIZE];
     Rectangle[][] nextGeneration = new Rectangle[SIZE][SIZE];
     Random r = new Random();
-    boolean firstGame = true;
+    boolean firstRound = true;
     private GraphicsContext gc;
     private GraphicsContext outlineGc;
 
@@ -32,84 +25,93 @@ public class GameOfLifeController {
     public void initialize() {
         gc = cnvs.getGraphicsContext2D();
         outlineGc = cnvs.getGraphicsContext2D();
-
-//        Rectangle [][] matrix = new Rectangle[SIZE][SIZE];
-
     }
 
-    void randomizeGame(Rectangle rect) {
+    private void randomizeGame(int x, int y) {
         if (r.nextInt(2) == 1) {
-            gc.setFill(Color.BLACK);
-            rect.setOpacity(1);
+            gc.setFill(Color.BLACK); //setting gc color
+            matrix [x][y].setFill(Color.BLACK);
         } else {
             gc.setFill(Color.WHITE);
-            rect.setOpacity(0);
+            matrix [x][y].setFill(Color.WHITE);
         }
     }
 
-
-    void calcNextGen(int x, int y, Rectangle rect) {
+    private int calcNextGen(int x, int y) {
         int lifeCounter = 0;
-        Paint currColor = matrix[x][y].getFill();
-        for (int i = -10; i < 2*10; i+=10)
-            for (int j = -10; j < 2*10; j+=10) {
+
+        for (int i = -1; i <= 1; i++)
+            for (int j = -1; j <= 1; j++) {
                 int newx = x + i;
-                int newy = y + i;
-             //   System.out.println(newx + " " + newy);
+                int newy = y + j;
+               // System.out.println("x is " + x + " y is " + y + " newx is " + newx + " newy is " + newy);
 
-                if ((newx >= 0 && newy >= 0) && (newx <= 9 && newy <= 9)) //positive
-                    if ((matrix[newx][newy].getOpacity() == 0))
-                        lifeCounter++;
+                if ((newx >= 0 && newy >= 0) && (newx <= 9 && newy <= 9)) {//positive
+                    if (newx != x || newy != y) {
+                        System.out.println("cord - (" + x + " , " + y + ") and check:  (" + newx + ", " + newy + ")");
+                        if ((matrix[newx][newy].getFill() == Color.WHITE))
+                            lifeCounter++;
+                   }
+                }
             }
-        System.out.println("lifc "+lifeCounter);
-
-        if (currColor == Color.WHITE) {
-            if (lifeCounter == 2 || lifeCounter == 3) {
-                gc.setFill(Color.BLUE);
-                rect.setFill(Color.BLUE);
-            }
-        } else{// if (lifeCounter == 3) {
-            gc.setFill(Color.RED);
-            rect.setFill(Color.RED);
-        }
-        nextGeneration[x][y] = rect;
+        return lifeCounter;
     }
+
+    private void paintNextGen (int lifeCounter, int x, int y) {
+        Paint currColor = matrix[x][y].getFill();
+
+        if (currColor == Color.WHITE) { //alive
+            if (lifeCounter == 2 || lifeCounter == 3) {
+                gc.setFill(Color.WHITE);
+                nextGeneration[x][y].setFill(Color.WHITE);
+            } else {
+                gc.setFill(Color.BLACK);
+                nextGeneration[x][y].setFill(Color.BLACK);
+            }
+        } else { //dead
+            if (lifeCounter == 3) { //back to life
+                gc.setFill(Color.WHITE);
+                nextGeneration[x][y].setFill(Color.WHITE);
+            }
+            else {
+                gc.setFill(Color.BLACK);
+                nextGeneration[x][y].setFill(Color.BLACK);
+            }
+        }
+    }
+
 
     @FXML
     protected void btnpressed() {
         Random r = new Random();
-        int count =0;
-//        gc.strokeRect(3,3,50,50); //outline color
-//        outlineGc.setFill(Color.WHITE);
-//        if (!firstGame)
-//            gc.fillRect(6,6,44,44); //inside color
-
         outlineGc.setFill(Color.BLACK);
-        //outlineGc.setLineWidth(1);
+        outlineGc.setLineWidth(3);
 
-        for (int i = 0; i < SIZE; i+=10) {
-            for (int j = 0; j < SIZE; j += 10) {
-                int x = r.nextInt(2);
-                count++;
-                System.out.println(i + j);
-
-                //  gc.clearRect();
-                Rectangle rect = new Rectangle(i * 5,j*5,50, 50);
-                if (firstGame) {
-                    randomizeGame(rect);
+        for (int i = 0; i < SIZE/10; i+=1) {
+            for (int j = 0; j < SIZE / 10; j += 1) {
+                if (firstRound) {
+                    matrix[i][j] = new Rectangle(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    randomizeGame(i, j);
+                    gc.fillRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //inside color
+                    outlineGc.strokeRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //outline color
+                } else {
+                    int lifeCounter = calcNextGen(i, j);
+                    System.out.println("this is lifeCounter for (" +i+","+j +"): "+lifeCounter);
+                    nextGeneration[i][j] = new Rectangle(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    paintNextGen(lifeCounter, i, j);
+                    gc.fillRect(nextGeneration[i][j].getX(), nextGeneration[i][j].getY(), nextGeneration[i][j].getWidth(), nextGeneration[i][j].getHeight()); //inside color
+                    outlineGc.strokeRect(nextGeneration[i][j].getX(), nextGeneration[i][j].getY(), nextGeneration[i][j].getWidth(), nextGeneration[i][j].getHeight()); //outline color
                 }
-                else{ //calculate next gen
-                    calcNextGen(i,j,rect);
-                }
-                matrix [i][j] = rect;
-                gc.fillRect(rect.getX(), rect.getY(),rect.getWidth(),rect.getHeight()); //inside color
-                outlineGc.strokeRect(rect.getX(), rect.getY(),rect.getWidth(),rect.getHeight()); //outline color
-
 
             }
         }
-        firstGame = false;
+        if (!firstRound) {
 
+            for (int x = 0; x < SIZE / 10; x++)
+                System.arraycopy(nextGeneration[x], 0, matrix[x], 0, SIZE / 10);
+        }
+
+        firstRound = false;
     }
 }
 
