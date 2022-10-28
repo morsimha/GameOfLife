@@ -13,8 +13,6 @@ public class GameOfLifeController {
     final int SIDE = MAT_SIZE / 10;
     final int CELL_SIZE = 50;
     boolean firstRound = true;
-    Rectangle rect = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
-
     Rectangle[][] matrix = new Rectangle[MAT_SIZE][MAT_SIZE];
     Rectangle[][] nextGen = new Rectangle[MAT_SIZE][MAT_SIZE];
     private GraphicsContext gc;
@@ -32,10 +30,10 @@ public class GameOfLifeController {
     // WHITE is dead and DIMGRAY is alive
     private Paint randomizeGame(int x, int y) {
         Random r = new Random();
-        if (r.nextInt(2) == 0) //Dead
-            return Color.DIMGRAY;
-        else //Alive
+        if (r.nextInt(2) == 1) //Dead
             return Color.WHITE;
+        else //Alive
+            return Color.DIMGRAY;
     }
 
     // checks cell's sibling color, to count lives around it.
@@ -54,11 +52,11 @@ public class GameOfLifeController {
             }
         return lifeCounter;
     }
-    //Paints the cell according to its lifeCounter.
-    //3 siblings means a birth or existence for all cells,
-    //2 siblings for a living cell means existence.
+
     private Paint paintNextGen(int lifeCounter, int x, int y) {
         Paint currColor = matrix[x][y].getFill();
+        //3 siblings means a birth or existence for all cells,
+        //2 siblings for a living cell means existence.
         if (lifeCounter == 3 || (lifeCounter == 2 && currColor == Color.DIMGRAY))
             return Color.DIMGRAY;
         else  //every other option means death
@@ -73,10 +71,10 @@ public class GameOfLifeController {
 
         for (int i = 0; i < SIDE; i++) {
             for (int j = 0; j < SIDE; j++) {
-                rect.setX(i * CELL_SIZE);
-                rect.setY(j * CELL_SIZE);
+                Rectangle rect =  new Rectangle(i*CELL_SIZE, j*CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 if (firstRound) { //
                     matrix[i][j] = rect;
+                //    matrix[i][j] = rect;
                     newColor = randomizeGame(i, j);
                     matrix[i][j].setFill(newColor);
                 } else {
