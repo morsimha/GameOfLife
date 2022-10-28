@@ -12,12 +12,12 @@ public class GameOfLifeController {
     final int MAT_SIZE = 100;
     final int SIDE = MAT_SIZE / 10;
     final int CELL_SIZE = 50;
-    Rectangle[][] matrix = new Rectangle[MAT_SIZE][MAT_SIZE];
-    Rectangle[][] nextGeneration = new Rectangle[MAT_SIZE][MAT_SIZE];
-    Random r = new Random();
     boolean firstRound = true;
+    Rectangle rect = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
+
+    Rectangle[][] matrix = new Rectangle[MAT_SIZE][MAT_SIZE];
+    Rectangle[][] nextGen = new Rectangle[MAT_SIZE][MAT_SIZE];
     private GraphicsContext gc;
-    private GraphicsContext outlineGc;
 
 
     @FXML
@@ -25,22 +25,17 @@ public class GameOfLifeController {
 
     public void initialize() {
         gc = cnvs.getGraphicsContext2D();
-        outlineGc = cnvs.getGraphicsContext2D(); //this Graphics Context settings will define the outlines of each cell.
-        outlineGc.setFill(Color.BLACK);
-        outlineGc.setLineWidth(3);
+        gc.setLineWidth(6);
     }
 
     //Randomizes a number (0,1) and sets the color cell color by it.
     // WHITE is dead and DIMGRAY is alive
-    private void randomizeGame(int x, int y) {
-        Color state;
-        if (r.nextInt(2) == 1) //Dead
-            state = Color.WHITE;
+    private Paint randomizeGame(int x, int y) {
+        Random r = new Random();
+        if (r.nextInt(2) == 0) //Dead
+            return Color.DIMGRAY;
         else //Alive
-            state = Color.DIMGRAY;
-
-        gc.setFill(state); //setting the cell's color.
-        matrix[x][y].setFill(state); //storing the color in the matrix
+            return Color.WHITE;
     }
 
     // checks cell's sibling color, to count lives around it.
@@ -59,43 +54,45 @@ public class GameOfLifeController {
             }
         return lifeCounter;
     }
-
-    private void paintNextGen(int lifeCounter, int x, int y) {
+    //Paints the cell according to its lifeCounter.
+    //3 siblings means a birth or existence for all cells,
+    //2 siblings for a living cell means existence.
+    private Paint paintNextGen(int lifeCounter, int x, int y) {
         Paint currColor = matrix[x][y].getFill();
+        if (lifeCounter == 3 || (lifeCounter == 2 && currColor == Color.DIMGRAY))
+            return Color.DIMGRAY;
+        else  //every other option means death
+            return Color.WHITE;
 
-        if (lifeCounter == 3) { //3 siblings means a birth or existence
-            gc.setFill(Color.DIMGRAY);
-            nextGeneration[x][y].setFill(Color.DIMGRAY);
-        } else if (lifeCounter == 2 && currColor == Color.DIMGRAY) { //2 siblings for a living cell means existence
-            gc.setFill(Color.DIMGRAY);
-            nextGeneration[x][y].setFill(Color.DIMGRAY);
-        } else { //every other option means death
-            gc.setFill(Color.WHITE);
-            nextGeneration[x][y].setFill(Color.WHITE);
-        }
     }
+
     @FXML
     protected void btnpressed() {
         int lifeCounter;
+        Paint newColor;
 
         for (int i = 0; i < SIDE; i++) {
             for (int j = 0; j < SIDE; j++) {
-                if (firstRound) {
-                    matrix[i][j] = new Rectangle(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    randomizeGame(i, j);
-                    gc.fillRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //inside color
+                rect.setX(i * CELL_SIZE);
+                rect.setY(j * CELL_SIZE);
+                if (firstRound) { //
+                    matrix[i][j] = rect;
+                    newColor = randomizeGame(i, j);
+                    matrix[i][j].setFill(newColor);
                 } else {
-                    nextGeneration[i][j] = new Rectangle(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    nextGen[i][j] = rect;
                     lifeCounter = calcNextGen(i, j);
-                    paintNextGen(lifeCounter, i, j);
-                    gc.fillRect(nextGeneration[i][j].getX(), nextGeneration[i][j].getY(), nextGeneration[i][j].getWidth(), nextGeneration[i][j].getHeight()); //inside color
+                    newColor = paintNextGen(lifeCounter, i, j);
+                    nextGen[i][j].setFill(newColor);
                 }
-                outlineGc.strokeRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //outline color
+                gc.setFill(newColor);
+                gc.fillRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //inside color
+                gc.strokeRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //outline color
             }
         }
         if (!firstRound)
-            for (int x = 0; x < SIDE; x++)
-                System.arraycopy(nextGeneration[x], 0, matrix[x], 0, SIDE);
+            for (int x = 0; x < SIDE; x++) //copy the new matrix to old one.
+                System.arraycopy(nextGen[x], 0, matrix[x], 0, SIDE);
         firstRound = false;
     }
 

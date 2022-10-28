@@ -1,5 +1,5 @@
 /**
- * Maman 11, question 2.
+ * Maman 11, question 1.
  * Mor Simha, 206029993.
  */
 
@@ -17,7 +17,7 @@ public class GameOfLife extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GameOfLife.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 503, 540);
+        Scene scene = new Scene(fxmlLoader.load(), 500, 525);
         stage.setTitle("Game of Life");
         stage.setScene(scene);
         stage.show();
