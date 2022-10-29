@@ -30,6 +30,12 @@ public class GameOfLifeController {
         drawMat();
         firstRound = false;
     }
+    @FXML
+    private void btnPressed() {
+        drawMat();
+        for (int x = 0; x < SIDE; x++)
+            System.arraycopy(nextGenMat[x], 0, lastGenMat[x], 0, SIDE);
+    }
 
     private void drawMat() {
         int lifeCounter;
@@ -73,7 +79,7 @@ public class GameOfLifeController {
             for (int j = -1; j <= 1; j++) {
                 newX = x + i; //new x coordinate to check
                 newY = y + j;
-                if ((newX >= 0 && newY >= 0) && (newX < SIDE && newY < SIDE) && !(newX == x && newY == y)) // check positive and not the middle coordinate
+                if (((newX >= 0 && newY >= 0) && (newX < SIDE && newY < SIDE)) && !(newX == x && newY == y)) // check positive and not the middle coordinate
                     if ((lastGenMat[newX][newY].getFill() == Color.DIMGRAY)) // avoid checking the middle one
                         lifeCounter++;
             }
@@ -89,16 +95,4 @@ public class GameOfLifeController {
         else  //every other option means death
             return Color.WHITE;
     }
-
-    @FXML
-    private void btnPressed() {
-        drawMat();
-        for (int x = 0; x < SIDE; x++)
-            System.arraycopy(nextGenMat[x], 0, lastGenMat[x], 0, SIDE);
-    }
 }
-
-
-
-
-
