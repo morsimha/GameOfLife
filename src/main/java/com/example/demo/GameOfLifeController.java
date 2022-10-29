@@ -14,20 +14,19 @@ import javafx.scene.shape.Rectangle;
 import java.util.Random;
 
 public class GameOfLifeController {
-    final int MAT_SIZE = 100;
-    final int SIDE = MAT_SIZE / 10;
-    final int CELL_SIZE = 50;
-    boolean firstRound = true;
-    Rectangle[][] matrix = new Rectangle[MAT_SIZE][MAT_SIZE];
-    Rectangle[][] nextGen = new Rectangle[MAT_SIZE][MAT_SIZE];
-    private GraphicsContext gc;
-
     @FXML
     private Canvas cnvs;
+
+    private final int MAT_SIZE = 100, SIDE = MAT_SIZE / 10, CELL_SIZE = 50;
+    private boolean firstRound = true;
+    private Rectangle[][] lastGenMat, nextGenMat;
+    private GraphicsContext gc;
 
     public void initialize() {
         gc = cnvs.getGraphicsContext2D();
         gc.setLineWidth(6);
+        lastGenMat = new Rectangle[MAT_SIZE][MAT_SIZE];
+        nextGenMat = new Rectangle[MAT_SIZE][MAT_SIZE];
         drawMat();
         firstRound = false;
     }
@@ -39,18 +38,18 @@ public class GameOfLifeController {
             for (int j = 0; j < SIDE; j++) {
                 Rectangle rect = new Rectangle(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 if (firstRound) { //randomizing the first matrix
-                    matrix[i][j] = rect;
+                    lastGenMat[i][j] = rect;
                     newColor = randomizeGame();
-                    matrix[i][j].setFill(newColor);
+                    lastGenMat[i][j].setFill(newColor);
                 } else { //Counting lives and calculating the next generation's matrix.
-                    nextGen[i][j] = rect;
+                    nextGenMat[i][j] = rect;
                     lifeCounter = countLives(i, j);
                     newColor = CalculateNextGen(lifeCounter, i, j);
-                    nextGen[i][j].setFill(newColor);
+                    nextGenMat[i][j].setFill(newColor);
                 }
                 gc.setFill(newColor); //choosing the right color for the cell
-                gc.fillRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //inside color
-                gc.strokeRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //outline color
+                gc.fillRect(lastGenMat[i][j].getX(), lastGenMat[i][j].getY(), lastGenMat[i][j].getWidth(), lastGenMat[i][j].getHeight()); //inside color
+                gc.strokeRect(lastGenMat[i][j].getX(), lastGenMat[i][j].getY(), lastGenMat[i][j].getWidth(), lastGenMat[i][j].getHeight()); //outline color
 
             }
         }
@@ -76,7 +75,7 @@ public class GameOfLifeController {
                 newY = y + j;
                 if ((newX >= 0 && newY >= 0) && (newX < SIDE && newY < SIDE)) // check positive coordinate
                     if (!(newX == x && newY == y)) // avoid check the middle one
-                        if ((matrix[newX][newY].getFill() == Color.DIMGRAY)) {
+                        if ((lastGenMat[newX][newY].getFill() == Color.DIMGRAY)) {
                             lifeCounter++;
                         }
             }
@@ -84,7 +83,7 @@ public class GameOfLifeController {
     }
 
     private Paint CalculateNextGen(int lifeCounter, int x, int y) {
-        Paint currColor = matrix[x][y].getFill();
+        Paint currColor = lastGenMat[x][y].getFill();
         //3 siblings means a birth or existence for all cells,
         //2 siblings for a living cell means existence.
         if (lifeCounter == 3 || (lifeCounter == 2 && currColor == Color.DIMGRAY))
@@ -97,7 +96,7 @@ public class GameOfLifeController {
     private void btnPressed() {
         drawMat();
         for (int x = 0; x < SIDE; x++)
-            System.arraycopy(nextGen[x], 0, matrix[x], 0, SIDE); //TODO: check it out
+            System.arraycopy(nextGenMat[x], 0, lastGenMat[x], 0, SIDE);
     }
 }
 
