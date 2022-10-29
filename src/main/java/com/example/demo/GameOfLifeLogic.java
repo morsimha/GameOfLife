@@ -8,42 +8,46 @@ import java.util.Random;
 public class GameOfLifeLogic {
 
     private final int MAT_SIZE = 100, SIDE = (MAT_SIZE / 10), CELL_SIZE = 50;
-    private boolean firstRound;
     private Rectangle[][] historyMat, GenerationMat; //history will always hold last generation's matrix.
 
     public GameOfLifeLogic() {
         this.historyMat = new Rectangle[MAT_SIZE][MAT_SIZE];
         this.GenerationMat = new Rectangle[MAT_SIZE][MAT_SIZE];
-        this.firstRound = true;
     }
 
     public Rectangle[][] getMat() {
         return GenerationMat;
     }
 
-    //Randomizes or calculates generation's matrix.
-    public void createGeneration() {
-        int lifeCounter;
+    //Randomizes the first generation's matrix.
+    public void createFirstGeneration() {
         Paint newColor;
         for (int i = 0; i < SIDE; i++) {
             for (int j = 0; j < SIDE; j++) {
                 Rectangle rect = new Rectangle(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 GenerationMat[i][j] = rect;
-                if (firstRound) //randomizing the first matrix
-                    newColor = randomizeGame();
-                else { //Counting lives and calculating the next generation's matrix.
-                    lifeCounter = countLives(i, j);
-                    newColor = CalculateNextGen(lifeCounter, i, j);
-                }
+                newColor = randomizeGame();
                 GenerationMat[i][j].setFill(newColor);
             }
         }
         copyMat();
-        if (firstRound)
-            firstRound = false;
     }
 
-
+    //Updates the next generation's matrix by the game rules.
+    public void updateGeneration() {
+        int lifeCounter;
+        Paint newColor;
+        for (int i = 0; i < SIDE; i++) {  //Counting lives and calculating the next generation's matrix.
+            for (int j = 0; j < SIDE; j++) {
+                Rectangle rect = new Rectangle(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                GenerationMat[i][j] = rect;
+                lifeCounter = countLives(i, j);
+                newColor = CalculateNextGen(lifeCounter, i, j);
+                GenerationMat[i][j].setFill(newColor);
+            }
+        }
+        copyMat();
+    }
     //Copies the current matrix to the history matrix.
     private void copyMat() {
         for (int i = 0; i < SIDE; i++)

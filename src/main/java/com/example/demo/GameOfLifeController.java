@@ -20,14 +20,13 @@ public class GameOfLifeController {
     public void initialize() {
         gc = cnvs.getGraphicsContext2D();
         gc.setLineWidth(6);
-        game.createGeneration();
+        game.createFirstGeneration();
         fillRects();
-        // game.getMat().getFill
     }
 
     @FXML
     private void btnPressed() {
-        game.createGeneration();
+        game.updateGeneration();
         fillRects();
     }
 
