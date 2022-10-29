@@ -1,7 +1,3 @@
-/**
- * Maman 11, question 1.
- * Mor Simha, 206029993.
- */
 
 
 package com.example.demo;

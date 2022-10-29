@@ -15,9 +15,10 @@ public class GameOfLifeController {
 
     private final int SIDE = 10;
     private GraphicsContext gc;
-    GameOfLifeLogic game = new GameOfLifeLogic();
+    GameOfLifeLogic game;
 
     public void initialize() {
+        game = new GameOfLifeLogic();
         gc = cnvs.getGraphicsContext2D();
         gc.setLineWidth(6);
         game.createFirstGeneration();

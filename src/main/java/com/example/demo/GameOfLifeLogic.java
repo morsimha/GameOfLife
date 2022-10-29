@@ -1,3 +1,7 @@
+/**
+ * GameOfLifeLogic class is responsible for the game logic calculations and the matrix's building.
+ */
+
 package com.example.demo;
 
 import javafx.scene.paint.Color;
