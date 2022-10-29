@@ -27,36 +27,31 @@ public class GameOfLifeController {
         gc.setLineWidth(6);
         lastGenMat = new Rectangle[MAT_SIZE][MAT_SIZE];
         nextGenMat = new Rectangle[MAT_SIZE][MAT_SIZE];
-        drawMat();
+        drawMat(lastGenMat);
         firstRound = false;
     }
     @FXML
     private void btnPressed() {
-        drawMat();
+        drawMat(nextGenMat);
         for (int x = 0; x < SIDE; x++)
             System.arraycopy(nextGenMat[x], 0, lastGenMat[x], 0, SIDE);
     }
-
-    private void drawMat() {
+    //Randomizes or calculates every generation's matrix.
+    private void drawMat(Rectangle[][] matrix) {
         int lifeCounter;
         Paint newColor;
         for (int i = 0; i < SIDE; i++) {
             for (int j = 0; j < SIDE; j++) {
                 Rectangle rect = new Rectangle(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                if (firstRound) { //randomizing the first matrix
-                    lastGenMat[i][j] = rect;
+                matrix[i][j] = rect;
+                if (firstRound) //randomizing the first matrix
                     newColor = randomizeGame();
-                    lastGenMat[i][j].setFill(newColor);
-                } else { //Counting lives and calculating the next generation's matrix.
-                    nextGenMat[i][j] = rect;
+                else { //Counting lives and calculating the next generation's matrix.
                     lifeCounter = countLives(i, j);
                     newColor = CalculateNextGen(lifeCounter, i, j);
-                    nextGenMat[i][j].setFill(newColor);
                 }
-                gc.setFill(newColor); //choosing the right color for the cell
-                gc.fillRect(lastGenMat[i][j].getX(), lastGenMat[i][j].getY(), lastGenMat[i][j].getWidth(), lastGenMat[i][j].getHeight()); //inside color
-                gc.strokeRect(lastGenMat[i][j].getX(), lastGenMat[i][j].getY(), lastGenMat[i][j].getWidth(), lastGenMat[i][j].getHeight()); //outline color
-
+                matrix[i][j].setFill(newColor);
+                fillRects(matrix,newColor,i,j);
             }
         }
     }
@@ -85,7 +80,7 @@ public class GameOfLifeController {
             }
         return lifeCounter;
     }
-
+    //returns the correct cell color, according to its siblings.
     private Paint CalculateNextGen(int lifeCounter, int x, int y) {
         Paint currColor = lastGenMat[x][y].getFill();
         //3 siblings means a birth or existence for all cells,
@@ -95,4 +90,45 @@ public class GameOfLifeController {
         else  //every other option means death
             return Color.WHITE;
     }
+
+    //filling the rectangles according to the right color.
+    private void fillRects(Rectangle[][] matrix, Paint color,int i, int j){
+        gc.setFill(color); //choosing the right color for the cell
+        gc.fillRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //inside color
+        gc.strokeRect(matrix[i][j].getX(), matrix[i][j].getY(), matrix[i][j].getWidth(), matrix[i][j].getHeight()); //outline color
+    }
+
+
+
+    int counter = -1;
+
+    private Paint randomizeGame2() {
+        //   Random r = new Random();
+        counter++;
+        if (counter % 2 == 0)
+            return Color.DIMGRAY;
+        return Color.WHITE;
+    }
+
+    private int neighborCheck(int i, int j) {
+        int neighbor_count = 0;
+        for (int xx = -1; xx <= 1; xx++) {
+            for (int yy = -1; yy <= 1; yy++) {
+                if ((xx == 0 && yy == 0) || (xx + i < 0 && yy + j < 0 || !isOnMat(xx + i, yy + j))) {
+                    continue;
+                } //
+                if (lastGenMat[i + xx][j + yy].getFill() == Color.DIMGRAY && isOnMat(xx + i, yy + j)) {
+                    System.out.println(xx + " " + i + " " + yy + " " + j);
+                    neighbor_count++;
+                }
+            }
+        }
+        return neighbor_count; // TODO: in i = 0 , j =1 i got count =3 ;
+    }
+
+    // Check if the index is in the Matrix between
+    private boolean isOnMat(int x, int y) {
+        return x >= 0 && y >= 0 && x <= 9 && y <= 9 && x != -1 && y != -1;
+    }
+
 }
