@@ -73,11 +73,9 @@ public class GameOfLifeController {
             for (int j = -1; j <= 1; j++) {
                 newX = x + i; //new x coordinate to check
                 newY = y + j;
-                if ((newX >= 0 && newY >= 0) && (newX < SIDE && newY < SIDE)) // check positive coordinate
-                    if (!(newX == x && newY == y)) // avoid check the middle one
-                        if ((lastGenMat[newX][newY].getFill() == Color.DIMGRAY)) {
-                            lifeCounter++;
-                        }
+                if ((newX >= 0 && newY >= 0) && (newX < SIDE && newY < SIDE) && !(newX == x && newY == y)) // check positive and not the middle coordinate
+                    if ((lastGenMat[newX][newY].getFill() == Color.DIMGRAY)) // avoid checking the middle one
+                        lifeCounter++;
             }
         return lifeCounter;
     }
