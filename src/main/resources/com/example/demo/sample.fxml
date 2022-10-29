@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox prefHeight="630.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.GameOfLifeController">
-   <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#btnpressed" prefHeight="25.0" prefWidth="104.0" text="Next generation">
+   <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#btnPressed" prefHeight="25.0" prefWidth="104.0" text="Next generation">
       <VBox.margin>
          <Insets />
       </VBox.margin>
