@@ -53,7 +53,7 @@ public class GameOfLifeLogic {
         copyMat();
     }
     //Copies the current matrix to the history matrix.
-    private void copyMat() {
+    private void copyMat()  {
         for (int i = 0; i < SIDE; i++)
             for (int j = 0; j < SIDE; j++)
                 historyMat[i][j] = GenerationMat[i][j];
