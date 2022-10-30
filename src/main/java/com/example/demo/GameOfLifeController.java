@@ -31,7 +31,7 @@ public class GameOfLifeController {
         fillRects();
     }
 
-    //filling the rectangles according to the right color.
+    //Filling the rectangles according to the right color.
     private void fillRects() {
         for (int i = 0; i < SIDE; i++) {
             for (int j = 0; j < SIDE; j++) {
